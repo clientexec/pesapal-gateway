@@ -139,11 +139,9 @@ IFRAME;
 
     function credit($params)
     {
-
     }
 
     function ShowURL($params)
     {
-
     }
 }
