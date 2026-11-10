@@ -9,6 +9,11 @@ class PluginPesapalCallback extends PluginCallback
 
     function processCallback()
     {
+        // Execute PluginCallback::processCallback() first
+        if (!parent::processCallback()) {
+            return;
+        }
+
         $consumerKey = $this->settings->get('plugin_pesapal_Consumer Key');
         $consumerSecret = $this->settings->get('plugin_pesapal_Consumer Secret');
 
@@ -36,7 +41,10 @@ class PluginPesapalCallback extends PluginCallback
             curl_setopt($ch, CURLOPT_URL, $request_status);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HEADER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            $caPathOrFile = \Composer\CaBundle\CaBundle::getSystemCaRootBundlePath();
+            curl_setopt($ch, is_dir($caPathOrFile) ? CURLOPT_CAPATH : CURLOPT_CAINFO, $caPathOrFile);
             $response = curl_exec($ch);
             $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
             $raw_header  = substr($response, 0, $header_size - 4);
